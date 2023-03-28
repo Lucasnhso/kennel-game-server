@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Breed {
+  id              Int            @id @default(autoincrement())
+  name            String
+  minHeight       Float
+  maxHeight       Float
+  femaleMinWeight Float
+  femaleMaxWeight Float
+  maleMinWeight   Float
+  maleMaxWeight   Float
+  PercentBreed    PercentBreed[]
+}
+
+model PercentBreed {
+  id      Int   @id @default(autoincrement())
+  breed   Breed @relation(fields: [breedId], references: [id])
+  breedId Int
+  dog     Dog   @relation(fields: [dogId], references: [id])
+  dogId   Int
+  percent Float
+}
+
+model Dog {
+  id         Int            @id @default(autoincrement())
+  name       String
+  gender     String
+  breeds     PercentBreed[]
+  fatherId   Int?
+  father     Dog?           @relation("FatherSons", fields: [fatherId], references: [id])
+  fatherSons Dog[]          @relation("FatherSons")
+  motherId   Int?
+  mother     Dog?           @relation("MotherSons", fields: [motherId], references: [id])
+  motherSons Dog[]          @relation("MotherSons")
+  height     Float
+  weight     Float
+}
